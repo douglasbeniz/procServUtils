@@ -5,6 +5,12 @@ from .conf import getconf
 import logging
 _log = logging.getLogger(__name__)
 
+
+# -----------------------------------------------------------------------------
+# Default parameters
+# -----------------------------------------------------------------------------
+target_wants_dir = 'multi-user.target.wants'
+
 def write_service(F, conf, sect, user=False):
     opts = {
         'name':sect,
@@ -82,7 +88,7 @@ def run(outdir, user=False, name='*'):
     conf = getconf(user=user)
     service_name_template = 'ioc@%s.service'
 
-    wantsdir = os.path.join(outdir, 'multi-user.target.wants')
+    wantsdir = os.path.join(outdir, target_wants_dir)
     try:
         os.makedirs(wantsdir)
     except OSError as e:
@@ -123,6 +129,9 @@ def clean(outdir, wantsdir, name='*'):
             os.remove(serviceFile)
         except:
             _log.debug("Error while trying to delete a service file: %s" % serviceFile)
+
+    if not wantsdir:
+        wantsdir = wantsdir = os.path.join(outdir, target_wants_dir)
 
     # Cleanup of the symbolik links for *.service files which match informed name
     serviceFilesList = glob.glob(os.path.join(wantsdir, service_name_template % name), recursive=True)

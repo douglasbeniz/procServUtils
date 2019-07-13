@@ -270,7 +270,7 @@ def delproc(conf, args):
     # Check if should update (in this case remove) systemd service files
     if args.writesysd:
         _log.info('Trying to update systemd service files...')
-        genclean(outdir=args.outsysd, name=args.name)
+        genclean(outdir=args.outsysd, wantsdir=None, name=args.name)
 
     # Daemon reloading
     _log.info('Trigger systemd reload')
