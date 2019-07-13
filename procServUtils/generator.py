@@ -17,6 +17,7 @@ def write_service(F, conf, sect, user=False):
         'user':conf.get(sect, 'user'),
         'group':conf.get(sect, 'group'),
         'chdir':conf.get(sect, 'chdir'),
+        'execpre':conf.get(sect, 'execpre') if conf.has_option(sect, 'execpre') else '',
         'command':conf.get(sect, 'command'),
         'port':conf.get(sect, 'port'),
         'userarg':'--user' if user else '--system',
@@ -53,7 +54,15 @@ ConditionPathIsDirectory={chdir}
     F.write("""
 [Service]
 Type=simple
-ExecStart=/usr/bin/procServ \\
+""")
+
+    exec_pre_list = opts['execpre'].split(',')
+    for exec_pre in exec_pre_list:
+        if exec_pre:
+            F.write("""ExecStartPre={}/{}
+""".format(opts['chdir'], exec_pre))
+
+    F.write("""ExecStart=/usr/bin/procServ \\
                     --foreground \\
                     --logfile=/var/log/procServ/out-{name} \\
                     --info-file=/run/ioc@{name}/info \\

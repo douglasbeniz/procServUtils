@@ -180,6 +180,7 @@ command = %(command)s
 chdir = %(chdir)s
 """%opts)
 
+        if args.execpre: F.write("execpre = %s\n"%args.execpre)
         if args.username: F.write("user = %s\n"%args.username)
         if args.group: F.write("group = %s\n"%args.group)
         if args.host: F.write("host = %s\n"%args.host)
@@ -354,7 +355,7 @@ def getargs():
     S.add_argument('-H', '--host', help='Target IOC hostname', default='localhost')
     S.add_argument('-S', '--site', help='Allow site-specific configuration')
     S.add_argument('-f', '--force', action='store_true', default=False)
-    S.add_argument('-A', '--autostart',action='store_true', default=False,
+    S.add_argument('-A', '--autostart', action='store_true', default=False,
                     help='Automatically start the service after adding it')
     S.add_argument('-w', '--writeconf', action='store_true', default=True,
                     help='Automatically update Conserver configuration')
@@ -363,9 +364,10 @@ def getargs():
                     help='Create systemd service files')
     S.add_argument('-R', '--reload', action='store_true', default=False,
                     help='Restart conserver-server')
+    S.add_argument('-i', '--execpre',
+                    help='Script(s) at run directory to execute before the startup command separated by comma (,)')
     S.add_argument('--command', help='Command script or executable, without path (chdir is added later)')
     S.add_argument('name', help='Instance name')
-    #S.add_argument('command', nargs='+', help='Command script or executable, without path (chdir is added later)')
     S.set_defaults(func=addproc)
 
     S = SP.add_parser('remove', help='Remove a procServ instance')
