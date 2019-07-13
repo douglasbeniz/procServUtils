@@ -91,7 +91,7 @@ def run(outdir, user=False, name='*'):
             raise
 
     # Cleanup of the *.service files at first
-    clean(outdir, name)
+    clean(outdir, wantsdir, name)
 
     # Create new service files according to configured procedures
     for sect in conf.sections():
@@ -112,7 +112,7 @@ def run(outdir, user=False, name='*'):
             except FileExistsError:
                 continue
 
-def clean(outdir, name='*'):
+def clean(outdir, wantsdir, name='*'):
     service_name_template = 'ioc@%s.service'
 
     # Cleanup of the *.service files which match informed name
@@ -120,6 +120,15 @@ def clean(outdir, name='*'):
     for serviceFile in serviceFilesList:
         try:
             _log.info("Removing... %s" % str(serviceFile))
+            os.remove(serviceFile)
+        except:
+            _log.debug("Error while trying to delete a service file: %s" % serviceFile)
+
+    # Cleanup of the symbolik links for *.service files which match informed name
+    serviceFilesList = glob.glob(os.path.join(wantsdir, service_name_template % name), recursive=True)
+    for serviceFile in serviceFilesList:
+        try:
+            _log.info("Removing link... %s" % str(serviceFile))
             os.remove(serviceFile)
         except:
             _log.debug("Error while trying to delete a service file: %s" % serviceFile)
